@@ -3,7 +3,7 @@
 # joao's auto ricing and bootstrapping script
 
 username=`whoami`
-loginshell=zsh
+loginshell='/usr/bin/zsh'
 doturl='https://github.com/segf00lt/dotfiles'
 dotrepodir="${doturl%%*/}"
 
@@ -33,7 +33,7 @@ gitmakeinstall() {
 }
 
 changeshell() {
-	sudo chsh -s "$loginshell" "$username"
+	chsh -s "$loginshell" "$username"
 }
 
 [[ $# == 0 || "${1##*.}" != csv ]] && error 'no csv file given'
@@ -41,28 +41,31 @@ progsfile="$1"
 
 # update system, install git and yay
 update
-pushd /tmp
 pminstall git
-git clone https://aur.archlinux.org/yay.git
-sudo chown -R "$username:users" ./yay
-cd yay
-makepkg -Asi
-popd
+if [[ ! -f /usr/bin/yay ]]; then
+	pushd /tmp
+	git clone https://aur.archlinux.org/yay.git
+	sudo chown -R "$username:users" ./yay
+	cd yay
+	makepkg -Asi
+	popd
+fi
 
 # download and install dotfiles
-pushd "$HOME"
+pushd "/home/$username"
 git clone --recursive "$dotfiles"
 cd "$dotrepodir"
-mv -fv * ..
-mv -fv . "$HOME/.config"
+cd ..
+cp -rf "$dotrepodir/*" .
 popd
 
+# TODO extract repo progs and install in single pacman command
 # install progs
 while IFS=, read -r tag prog; do
 	case "$tag" in
-		"A") aurinstall prog ;;
-		"G") gitmakeinstall prog ;;
-		*) pminstall prog ;;
+		"A") aurinstall "$prog" ;;
+		"G") gitmakeinstall "$prog" ;;
+		*) pminstall "$prog" ;;
 	esac
 done < "$progsfile"
 
