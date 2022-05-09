@@ -3,7 +3,6 @@
 ,valgrind
 ,strace
 ,ctags
-G,https://github.com/tmux-plugins/tmux-resurrect
 ,gcc
 ,tcc
 ,go

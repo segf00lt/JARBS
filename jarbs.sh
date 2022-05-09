@@ -48,7 +48,7 @@ done < progs.csv
 
 # download and install dotfiles
 pushd "$HOME"
-git clone "$dotfiles"
+git clone --recursive "$dotfiles"
 cd "$dotrepodir"
 mv -fv * ..
 cd ..
