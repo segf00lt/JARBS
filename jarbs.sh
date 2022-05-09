@@ -3,6 +3,7 @@
 # joao's auto ricing and bootstrapping script
 
 username=`whoami`
+loginshell=zsh
 doturl='https://github.com/segf00lt/dotfiles'
 dotrepodir="${doturl%%*/}"
 
@@ -10,12 +11,16 @@ error() {
 	printf "jarbs: %s\n" "$1" 1>&2 && exit 1
 }
 
+update() {
+	sudo pacman --noconfirm --needed -Syu
+}
+
 pminstall() {
-	sudo pacman --noconfirm --needed -S
+	sudo pacman --noconfirm --needed -S $@
 }
 
 aurinstall() {
-	yay --noconfirm --needed -S
+	yay --noconfirm --needed -S $@
 }
 
 gitmakeinstall() {
@@ -27,14 +32,29 @@ gitmakeinstall() {
 	popd
 }
 
+changeshell() {
+	sudo chsh -s "$loginshell" "$username"
+}
+
+[[ $# == 0 || "${1##*.}" != csv ]] && error 'no csv file given'
+progsfile="$1"
+
 # update system, install git and yay
-sudo pacman --noconfirm --needed -Syu
+update
 pushd /tmp
-pminstall base-devel git
+pminstall git
 git clone https://aur.archlinux.org/yay.git
 sudo chown -R "$username:users" ./yay
 cd yay
 makepkg -Asi
+popd
+
+# download and install dotfiles
+pushd "$HOME"
+git clone --recursive "$dotfiles"
+cd "$dotrepodir"
+mv -fv * ..
+mv -fv . "$HOME/.config"
 popd
 
 # install progs
@@ -44,15 +64,8 @@ while IFS=, read -r tag prog; do
 		"G") gitmakeinstall prog ;;
 		*) pminstall prog ;;
 	esac
-done < progs.csv
+done < "$progsfile"
 
-# download and install dotfiles
-pushd "$HOME"
-git clone --recursive "$dotfiles"
-cd "$dotrepodir"
-mv -fv * ..
-cd ..
-mv -fv "$dotrepodir" '.config'
-popd
+changeshell
 
 echo "All done!"
