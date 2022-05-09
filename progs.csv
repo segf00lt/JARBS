@@ -1,19 +1,14 @@
-# development
 ,neovim
 ,tmux
 ,valgrind
 ,strace
 ,ctags
 G,https://github.com/tmux-plugins/tmux-resurrect
-
-# languages
 ,gcc
 ,tcc
 ,go
 ,python
 ,gambit-c
-
-# gui
 ,xorg-server
 ,xorg-xinit
 ,xorg-xrandr
@@ -31,16 +26,12 @@ G,https://github.com/segf00lt/st
 G,https://github.com/segf00lt/dwm
 G,https://github.com/segf00lt/dwmblocks
 G,https://github.com/segf00lt/dmenu
-
-# fonts
 ,noto-fonts
 ,noto-fonts-cjk
 ,noto-fonts-emoji
 ,noto-fonts-extra
 ,ttf-opensans
 ,ttf-liberation
-
-# misc
 ,md4c
 G,https://github.com/segf00lt/pikchr
 A,lf
